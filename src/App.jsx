@@ -5,6 +5,7 @@ import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { fetchMovies } from './servers/tmdb';
 import { AuthProvider } from "./components/AuthContent";
+import Footer from "./components/Footer";
 
 const MovieList = lazy(() => import('./components/MovieList'));
 const Navbar = lazy(() => import('./components/Navbar'));
@@ -58,6 +59,7 @@ const App = () => {
           <Route path="/my-bookings" element={<MyBookings />} />
           {/* <Route path="/paymentsuccess" element={<PaymentSuccess />} /> */}
         </Routes>
+        <Footer />
       </div>
     </BrowserRouter>
   </AuthProvider>
