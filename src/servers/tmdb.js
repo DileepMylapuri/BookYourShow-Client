@@ -25,12 +25,9 @@ export const fetchRecommendedMovies = async (movieId) => {
   return data.results;
 };
 
-const API_KEY = "a0b38cda0897a0a53b1623adb1f6f0b6";
 export const fetchRecentMovies = async () => {
   try {
-    const response = await fetch(
-      `https://api.themoviedb.org/3/movie/now_playing?api_key=${API_KEY}&language=en-US&region=IN&page=1`
-    );
+    const response = await fetch(`${BASE_URL}/api/movies/recent`);
     const data = await response.json();
     return data.results ?? [];
   } catch (error) {
