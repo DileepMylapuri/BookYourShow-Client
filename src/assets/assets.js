@@ -3,7 +3,7 @@ import QRcode from './QRcode.png'
 import PhonePay from './PhonePay.png'
 import Gpay from './Gpay.png'
 import UPI from './UPI.png'
-import GooglePay from './GooglePay.png'
+import GooglePay from './Googlepay.png'
 import offerImg from './offerImg.avif'
 import offers2 from './offers2.avif'
 
