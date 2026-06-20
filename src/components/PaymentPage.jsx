@@ -85,41 +85,42 @@ export default function PaymentPage() {
 const proceedtoPay = async () => {
   setPaymentStatus('processing');
   try {
-    const [emailRes, bookingRes] = await Promise.all([
-      fetch(`${API_BASE_URL}/api/send-booking-email`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: user.email,
-          username: user.username,
-          movie,
-          theater,
-          showDateTime,
-          seats,
-          totalAmount,
-        }),
+    // Save booking first — this is critical
+    const bookingRes = await fetch(`${API_BASE_URL}/api/bookings`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        movieId: String(movie.id),
+        movieTitle: movie.title,
+        posterPath: movie.poster_path,
+        theater: theater.name,
+        date: showDateTime?.split(" | ")?.[0] ?? "",
+        time: showDateTime?.split(" | ")?.[1] ?? "",
+        seats: seats.map((s) => s.seatId),
+        email: user?.email ?? "",
+        totalAmount,
       }),
-      fetch(`${API_BASE_URL}/api/bookings`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          movieId: String(movie.id),
-          movieTitle: movie.title,
-          posterPath: movie.poster_path,
-          theater: theater.name,
-          date: showDateTime?.split(" | ")?.[0] ?? "",
-          time: showDateTime?.split(" | ")?.[1] ?? "",
-          seats: seats.map((s) => s.seatId),
-          email: user?.email ?? "",
-          totalAmount,
-        }),
-      }),
-    ]);
+    });
 
-    if (!emailRes.ok || !bookingRes.ok) throw new Error("Failed");
+    if (!bookingRes.ok) throw new Error("Booking failed");
     if (storageKey) sessionStorage.removeItem(storageKey);
+
+    // Send email separately — don't fail payment if email fails
+    fetch(`${API_BASE_URL}/api/send-booking-email`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: user.email,
+        username: user.username,
+        movie,
+        theater,
+        showDateTime,
+        seats,
+        totalAmount,
+      }),
+    }).catch((err) => console.warn("Email send failed (non-critical):", err));
+
     setPaymentStatus('success');
-    // setTimeout(() => setPaymentStatus(null), 3000);
   } catch {
     setPaymentStatus('error');
   }
