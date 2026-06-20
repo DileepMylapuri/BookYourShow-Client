@@ -86,7 +86,7 @@ const proceedtoPay = async () => {
   setPaymentStatus('processing');
   try {
     const [emailRes, bookingRes] = await Promise.all([
-      fetch("${API_BASE_URL}/api/send-booking-email", {
+      fetch(`${API_BASE_URL}/api/send-booking-email`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -99,7 +99,7 @@ const proceedtoPay = async () => {
           totalAmount,
         }),
       }),
-      fetch("${API_BASE_URL}/api/bookings", {
+      fetch(`${API_BASE_URL}/api/bookings`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

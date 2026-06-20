@@ -49,7 +49,7 @@ useEffect(() => {
 
      try {
     // Call backend API
-    const response = await fetch("${API_BASE_URL}/api/signup", {
+    const response = await fetch(`${API_BASE_URL}/api/signup`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, username, password }), // here using email as username or you can add username input
@@ -83,7 +83,7 @@ const handleLogin = async (e) => {
     }
 
     try {
-        const response = await fetch("${API_BASE_URL}/api/login", {
+        const response = await fetch(`${API_BASE_URL}/api/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
