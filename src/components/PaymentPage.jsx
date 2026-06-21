@@ -85,7 +85,7 @@ export default function PaymentPage() {
 const proceedtoPay = async () => {
   setPaymentStatus('processing');
   try {
-    // Save booking first — this is critical
+    // Step 1: Save booking
     const bookingRes = await fetch(`${API_BASE_URL}/api/bookings`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -101,12 +101,10 @@ const proceedtoPay = async () => {
         totalAmount,
       }),
     });
-
     if (!bookingRes.ok) throw new Error("Booking failed");
-    if (storageKey) sessionStorage.removeItem(storageKey);
 
-    // Send email separately — don't fail payment if email fails
-    fetch(`${API_BASE_URL}/api/send-booking-email`, {
+    // Step 2: Send confirmation email — wait for it
+    const emailRes = await fetch(`${API_BASE_URL}/api/send-booking-email`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -118,8 +116,14 @@ const proceedtoPay = async () => {
         seats,
         totalAmount,
       }),
-    }).catch((err) => console.warn("Email send failed (non-critical):", err));
+    });
 
+    if (storageKey) sessionStorage.removeItem(storageKey);
+
+    // Show success regardless of email — booking is confirmed
+    if (!emailRes.ok) {
+      console.warn("Email failed but booking saved");
+    }
     setPaymentStatus('success');
   } catch {
     setPaymentStatus('error');
